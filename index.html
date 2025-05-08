@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Bot Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --primary-dark: #1b5e20;
+            --secondary-color: #1976d2;
+            --secondary-dark: #1565c0;
+            --error-color: #d32f2f;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #546e7a;
+            --border-radius: 8px;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--card-background);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--background-color);
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2em;
+            margin: 0;
+        }
+
+        .stats {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats h2 {
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .player-count {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .console {
+            background-color: #263238;
+            color: #fff;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            height: 500px;
+            overflow-y: auto;
+            font-family: 'Roboto Mono', monospace;
+            position: relative;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #37474F;
+        }
+
+        .console-title {
+            font-size: 1.2em;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .console-line {
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #37474F;
+            word-wrap: break-word;
+        }
+
+        .console-line:hover {
+            background-color: #37474F;
+        }
+
+        .player-list {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            height: 500px;
+            overflow-y: auto;
+        }
+
+        .player-list h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .player-item {
+            padding: 12px;
+            margin: 8px 0;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+        }
+
+        .player-item:hover {
+            transform: translateX(5px);
+        }
+
+        .player-item::before {
+            content: '•';
+            color: var(--primary-color);
+            font-size: 1.5em;
+        }
+
+        .message-input {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .message-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .message-input input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .message-input button {
+            padding: 12px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .message-input button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .user-info {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #e3f2fd;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .user-info input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+        }
+
+        .user-info button {
+            padding: 12px 25px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .user-info button:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: var(--secondary-color);
+            background-color: white;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .clear-button {
+            padding: 8px 15px;
+            background-color: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .clear-button:hover {
+            background-color: #b71c1c;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-connected {
+            background-color: #4caf50;
+        }
+
+        .status-disconnected {
+            background-color: var(--error-color);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .message-input, .user-info {
+                flex-direction: column;
+            }
+
+            .message-input button, .user-info button {
+                width: 100%;
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+        <div class="header">
+            <h1>Minecraft Bot Dashboard</h1>
+            <div class="status-indicator status-connected" id="connectionStatus"></div>
+        </div>
+        
+        <div class="user-info">
+            <input type="text" id="userNameInput" placeholder="Enter your name" />
+            <button onclick="setUserName()">Set Name</button>
+            <span id="currentUserName" class="user-name"></span>
+        </div>
+
+        <div class="stats">
+            <h2>Current Status</h2>
+            <div class="player-count">
+                Players Online: <span id="playerCount">0</span>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="main-content">
+                <div class="console" id="console">
+                    <div class="console-header">
+                        <span class="console-title">Console Log</span>
+                        <button class="clear-button" onclick="clearConsoleLogs()">Clear Logs</button>
+                    </div>
+                    <div class="console-line">Console messages will appear here...</div>
+                </div>
+                <div class="message-input">
+                    <input type="text" id="messageInput" placeholder="Type your message here..." />
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+            <div class="player-list" id="playerList">
+                <h3>Online Players</h3>
+                <div id="players"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const consoleDiv = document.getElementById('console');
+        const playerCountSpan = document.getElementById('playerCount');
+        const playersDiv = document.getElementById('players');
+        const messageInput = document.getElementById('messageInput');
+        const userNameInput = document.getElementById('userNameInput');
+        const currentUserName = document.getElementById('currentUserName');
+        let playerCount = 0;
+        let userName = localStorage.getItem('userName') || '';
+
+        // Function to check if text contains a link
+        function containsLink(text) {
+            const urlPattern = /(https?:\/\/[^\s]+)/g;
+            return urlPattern.test(text);
+        }
+
+        // Load saved console logs on page load
+        function loadSavedLogs() {
+            const savedLogs = JSON.parse(localStorage.getItem('consoleLogs') || '[]');
+            savedLogs.forEach(log => {
+                const line = document.createElement('div');
+                line.className = 'console-line';
+                line.textContent = log;
+                consoleDiv.appendChild(line);
+            });
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        // Load saved user name on page load
+        function loadSavedUserName() {
+            if (userName) {
+                currentUserName.textContent = `Current name: ${userName}`;
+            }
+        }
+
+        // Function to set user name
+        function setUserName() {
+            const newName = userNameInput.value.trim();
+            if (newName) {
+                userName = newName;
+                localStorage.setItem('userName', userName);
+                currentUserName.textContent = `Current name: ${userName}`;
+                userNameInput.value = '';
+                addConsoleMessage(`Your name has been set to: ${userName}`);
+                
+                // Update message input placeholder
+                messageInput.placeholder = `Type your message as ${userName}...`;
+            }
+        }
+
+        // Function to add a message to the console
+        function addConsoleMessage(message) {
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            line.textContent = message;
+            consoleDiv.appendChild(line);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+
+            // Save to localStorage
+            const savedLogs = JSON.parse(localStorage.getItem('consoleLogs') || '[]');
+            savedLogs.push(message);
+            // Keep only last 1000 messages to prevent localStorage from getting too full
+            if (savedLogs.length > 1000) {
+                savedLogs.shift();
+            }
+            localStorage.setItem('consoleLogs', JSON.stringify(savedLogs));
+        }
+
+        // Function to clear console logs
+        function clearConsoleLogs() {
+            consoleDiv.innerHTML = '';
+            localStorage.removeItem('consoleLogs');
+            addConsoleMessage('Console logs cleared');
+        }
+
+        // Add clear logs button
+        const clearButton = document.createElement('button');
+        clearButton.textContent = 'Clear Logs';
+        clearButton.style.marginLeft = '10px';
+        clearButton.style.padding = '8px 15px';
+        clearButton.style.backgroundColor = '#d32f2f';
+        clearButton.style.color = 'white';
+        clearButton.style.border = 'none';
+        clearButton.style.borderRadius = '4px';
+        clearButton.style.cursor = 'pointer';
+        clearButton.onclick = clearConsoleLogs;
+        document.querySelector('.console').parentNode.insertBefore(clearButton, document.querySelector('.message-input'));
+
+        // Load saved data on page load
+        loadSavedLogs();
+        loadSavedUserName();
+        updateMessagePlaceholder();
+
+        // Function to update player count and list
+        function updatePlayers(players) {
+            playerCount = Object.keys(players).length;
+            playerCountSpan.textContent = playerCount;
+            
+            // Update player list
+            playersDiv.innerHTML = '';
+            Object.values(players).forEach(player => {
+                if (player.username !== 'Bot') { // Don't show the bot in the list
+                    const playerElement = document.createElement('div');
+                    playerElement.className = 'player-item';
+                    playerElement.textContent = player.username;
+                    playersDiv.appendChild(playerElement);
+                }
+            });
+        }
+
+        // Function to send message
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Check for links in the message
+            if (containsLink(message)) {
+                if (!userName) {
+                    addConsoleMessage('Please set your name before sending links!');
+                    userNameInput.focus();
+                    // Highlight the name input to draw attention
+                    userNameInput.style.borderColor = '#d32f2f';
+                    userNameInput.style.boxShadow = '0 0 5px #d32f2f';
+                    setTimeout(() => {
+                        userNameInput.style.borderColor = '#ddd';
+                        userNameInput.style.boxShadow = 'none';
+                    }, 2000);
+                    return;
+                }
+            }
+
+            if (!userName) {
+                addConsoleMessage('Please set your name before sending messages!');
+                userNameInput.focus();
+                // Highlight the name input to draw attention
+                userNameInput.style.borderColor = '#d32f2f';
+                userNameInput.style.boxShadow = '0 0 5px #d32f2f';
+                setTimeout(() => {
+                    userNameInput.style.borderColor = '#ddd';
+                    userNameInput.style.boxShadow = 'none';
+                }, 2000);
+                return;
+            }
+
+            ws.send(JSON.stringify({
+                type: 'chat',
+                message: message,
+                userName: userName
+            }));
+            messageInput.value = '';
+        }
+
+        // Handle paste event in message input
+        messageInput.addEventListener('paste', (e) => {
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            if (containsLink(pastedText) && !userName) {
+                e.preventDefault(); // Prevent paste if no name is set
+                addConsoleMessage('Please set your name before pasting links!');
+                userNameInput.focus();
+                // Highlight the name input to draw attention
+                userNameInput.style.borderColor = '#d32f2f';
+                userNameInput.style.boxShadow = '0 0 5px #d32f2f';
+                setTimeout(() => {
+                    userNameInput.style.borderColor = '#ddd';
+                    userNameInput.style.boxShadow = 'none';
+                }, 2000);
+            }
+        });
+
+        // Update message input placeholder based on name status
+        function updateMessagePlaceholder() {
+            if (userName) {
+                messageInput.placeholder = `Type your message as ${userName}...`;
+            } else {
+                messageInput.placeholder = 'Please set your name before sending messages';
+            }
+        }
+
+        // Handle Enter key in message input
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Handle Enter key in name input
+        userNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                setUserName();
+            }
+        });
+
+        // Connect to WebSocket for real-time updates
+        let ws = null;
+        let isPageRefreshing = false;
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT_ATTEMPTS = 5;
+
+        // Handle page refresh/close
+        window.addEventListener('beforeunload', () => {
+            isPageRefreshing = true;
+            if (ws) {
+                ws.close();
+            }
+        });
+
+        // Update connection status indicator
+        function updateConnectionStatus(connected) {
+            const statusIndicator = document.getElementById('connectionStatus');
+            statusIndicator.className = 'status-indicator ' + 
+                (connected ? 'status-connected' : 'status-disconnected');
+        }
+
+        // Update WebSocket connection handling
+        function connectWebSocket() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                return;
+            }
+
+            ws = new WebSocket(`ws://${window.location.host}`);
+            
+            ws.onopen = () => {
+                reconnectAttempts = 0;
+                updateConnectionStatus(true);
+                if (!isPageRefreshing) {
+                    addConsoleMessage('Connected to server');
+                }
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'console') {
+                    addConsoleMessage(data.message);
+                } else if (data.type === 'players') {
+                    updatePlayers(data.players);
+                }
+            };
+
+            ws.onclose = () => {
+                updateConnectionStatus(false);
+                if (!isPageRefreshing) {
+                    reconnectAttempts++;
+                    if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
+                        setTimeout(() => {
+                            connectWebSocket();
+                        }, 5000);
+                    } else {
+                        addConsoleMessage('Connection lost. Please refresh the page.');
+                    }
+                }
+            };
+
+            ws.onerror = (error) => {
+                if (!isPageRefreshing) {
+                    console.error('WebSocket error:', error);
+                }
+            };
+        }
+
+        // Initial connection
+        connectWebSocket();
+    </script>
+  </body>
+</html>
