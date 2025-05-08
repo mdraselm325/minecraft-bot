@@ -30,8 +30,6 @@ app.get("/", (_, res) => res.sendFile(__dirname + "/index.html"));
 
 // Global bot instance
 let bot = null;
-let reconnectAttempts = 0;
-const MAX_RECONNECT_ATTEMPTS = 5;
 
 // WebSocket connection handling
 wss.on('connection', (ws) => {
@@ -165,7 +163,6 @@ function createBot() {
       broadcast({ type: 'console', message: logMessage });
       bot.setControlState('jump', true);
       setupInventoryManagement();
-      reconnectAttempts = 0; // Reset reconnect attempts on successful spawn
     });
 
     function setupInventoryManagement() {
@@ -247,37 +244,26 @@ function createBot() {
       const logMessage = `Bot was kicked: ${reason}`;
       console.log(logMessage);
       broadcast({ type: 'console', message: logMessage });
-      handleReconnect();
+      setTimeout(createBot, CONFIG.reconnectDelay);
     });
 
     bot.on('error', (err) => {
       const logMessage = `Bot encountered an error: ${err}`;
       console.log(logMessage);
       broadcast({ type: 'console', message: logMessage });
-      handleReconnect();
+      setTimeout(createBot, CONFIG.reconnectDelay);
     });
 
     bot.on('end', () => {
       const logMessage = 'Bot disconnected, attempting to reconnect...';
       console.log(logMessage);
       broadcast({ type: 'console', message: logMessage });
-      handleReconnect();
+      setTimeout(createBot, CONFIG.reconnectDelay);
     });
 
   } catch (err) {
     console.error('Error creating bot:', err);
-    handleReconnect();
-  }
-}
-
-function handleReconnect() {
-  if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-    reconnectAttempts++;
-    console.log(`Reconnect attempt ${reconnectAttempts} of ${MAX_RECONNECT_ATTEMPTS}`);
     setTimeout(createBot, CONFIG.reconnectDelay);
-  } else {
-    console.log('Max reconnect attempts reached. Please restart the application.');
-    broadcast({ type: 'console', message: 'Max reconnect attempts reached. Please restart the application.' });
   }
 }
 
@@ -288,6 +274,6 @@ server.listen(PORT, () => {
   createBot();
 });
 
-//// Rembember to sucribe to my channels!
+//// Remember to subscribe to my channels!
 /// www.youtube.com/c/JinMoriYT
-///www.youtube.com/channel/UC1SR0lQSDfdaSMhmUiaMitg
+/// www.youtube.com/channel/UC1SR0lQSDfdaSMhmUiaMitg
