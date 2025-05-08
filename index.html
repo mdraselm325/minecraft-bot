@@ -562,13 +562,21 @@
                 (connected ? 'status-connected' : 'status-disconnected');
         }
 
+        // Get WebSocket URL based on environment
+        function getWebSocketUrl() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.host;
+            return `${protocol}//${host}`;
+        }
+
         // Update WebSocket connection handling
         function connectWebSocket() {
             if (ws && ws.readyState === WebSocket.OPEN) {
                 return;
             }
 
-            ws = new WebSocket(`ws://${window.location.host}`);
+            const wsUrl = getWebSocketUrl();
+            ws = new WebSocket(wsUrl);
             
             ws.onopen = () => {
                 reconnectAttempts = 0;
@@ -604,6 +612,7 @@
             ws.onerror = (error) => {
                 if (!isPageRefreshing) {
                     console.error('WebSocket error:', error);
+                    addConsoleMessage('Connection error occurred. Attempting to reconnect...');
                 }
             };
         }
