@@ -10,7 +10,7 @@ const WebSocket = require('ws');
 
 // Configuration
 const CONFIG = {
-  host: 'pl-01.freezehost.pro',
+  host: '51.83.237.187',
   port: 9604,
   username: 'Bot',
   auth: 'bot112022',
