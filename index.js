@@ -10,8 +10,8 @@ const WebSocket = require('ws');
 
 // Configuration
 const CONFIG = {
-  host: '51.83.237.187',
-  port: 9604,
+  host: 'emerald.magmanode.com',
+  port: 33713,
   username: 'Bot',
   auth: 'bot112022',
   version: false,
