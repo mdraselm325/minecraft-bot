@@ -10,8 +10,8 @@ const WebSocket = require('ws');
 
 // Configuration
 const CONFIG = {
-  host: 'emerald.magmanode.com',
-  port: 33713,
+  host: 'romeobot.play.hosting',
+  port: 56160,
   username: 'Bot',
   auth: 'bot112022',
   version: false,
