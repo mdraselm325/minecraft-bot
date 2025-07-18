@@ -10,8 +10,8 @@ const WebSocket = require('ws');
 
 // Configuration
 const CONFIG = {
-  host: 'romeobot.play.hosting',
-  port: 56160,
+  host: 'romeobot.falixsrv.me',
+  port: 26914,
   username: 'Bot',
   auth: 'bot112022',
   version: false,
